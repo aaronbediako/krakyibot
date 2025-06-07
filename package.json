@@ -1,0 +1,23 @@
+{
+  "name": "krachi-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.9.0",
+    "cohere-ai": "^7.17.1",
+    "dotenv": "^16.5.0",
+    "firebase": "^11.9.0",
+    "firebase-admin": "^13.4.0",
+    "openai": "^5.1.1",
+    "twitter-api-v2": "^1.23.2"
+  }
+}

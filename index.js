@@ -16,9 +16,11 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { fileURLToPath } from 'url';
 // import serviceAccount from './krakyi-firebase-serviceacct.json' assert { type: 'json' };
-const serviceAccount = JSON.parse(
-  await readFile(new URL('./krakyi-firebase-serviceacct.json', import.meta.url), 'utf8')
-);
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+// JSON.parse(
+//   await readFile(new URL('./krakyi-firebase-serviceacct.json', import.meta.url), 'utf8')
+// );
 
 
 //const serviceAccount = require('./krakyi-firebase-serviceacct.json');
