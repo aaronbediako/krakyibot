@@ -7,23 +7,15 @@ import { TwitterApi } from 'twitter-api-v2';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { CohereClientV2 } from "cohere-ai";
-// Remove client SDK imports:
-// import { initializeApp } from 'firebase/app';
-// import { getFirestore, doc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
-import admin from 'firebase-admin'; // Add Admin SDK import
+
+import admin from 'firebase-admin'; 
 //import credentials from './firebaseCredentials.js';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { fileURLToPath } from 'url';
-// import serviceAccount from './krakyi-firebase-serviceacct.json' assert { type: 'json' };
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
-// JSON.parse(
-//   await readFile(new URL('./krakyi-firebase-serviceacct.json', import.meta.url), 'utf8')
-// );
 
-
-//const serviceAccount = require('./krakyi-firebase-serviceacct.json');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,7 +56,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 //cohere ai
 const cohere = new CohereClientV2({
-  token: process.env.COHERE_API_KEY, // Or use your actual key
+  token: process.env.COHERE_API_KEY,
 });
 
 // --- Init Firebase ---
@@ -76,8 +68,7 @@ const firebaseConfig = {
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
 };
-// const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
+
 
 // --- Init Firebase Admin SDK ---
 admin.initializeApp({
@@ -88,7 +79,7 @@ const db = admin.firestore();
 // --- Fallback messages for when meme generation fails ---
 // These are humorous fallback messages in Pidgin English
 // to use when the AI fails to generate a meme or image.
-// They are designed to be light-hearted and relatable, reflecting common Ghanaian humor.
+// They are designed to be light-hearted and relatable
 const fallbackMessages = [
   "Chale sorry oo, my brain dey jam small. Try me again later. 😂🙏",
   "Ei sorry o! The meme engine sleep small. Come back make we vibe. 😅🤖",
@@ -106,12 +97,7 @@ function getRandomFallbackMessage() {
 // --- Helper: Generate meme text ---
 async function generateMemeText(input) {
   const prompt = `You are a Ghanaian meme generator. Given this text, return a short, funny and culturally relevant meme in Pidgin. Be creative and local: "${input}"`;
-//   const response = await openai.chat.completions.create({
-//     model: 'gpt-4o',
-//     messages: [{ role: 'user', content: prompt }],
-//     max_tokens: 80,
-//     temperature: 0.9,
-//     });
+
     // Try GPT-4o
   try {
     const gpt4Response = await openai.chat.completions.create({
@@ -151,12 +137,7 @@ async function generateMemeText(input) {
 
   // 4. Try Cohere
   try {
-    // const response = await cohere.generate({
-    //   model: 'command-r-plus', // or 'command'
-    //   prompt: prompt,
-    //   max_tokens: 200,
-    //   //temperature: 0.9,
-    // });
+    
     const response = await cohere.chat({
         model: "command-r-plus",
         messages: [
@@ -346,35 +327,6 @@ async function getEffectiveTweet(tweet) {
   }
 }
 
-// --- Reply with media and text ---
-
-
-// async function replyWithImageAndText(tweetId, text, imagePath) {
-//   try {
-//     // Upload media to Twitter
-//     const mediaId = await twitterClient.v1.uploadMedia(imagePath);
-
-//     // Post reply with media
-//     await twitterClient.v2.reply(text, tweetId, {
-//       media: { media_ids: [mediaId] },
-//     });
-
-//     // Delete temp image after successful post
-//     await fsp.unlink(imagePath);
-//   } catch (err) {
-//     console.error('❌ Error in replyWithImageAndText:', err.message);
-
-//     // Optional: Try deleting the image even if posting failed
-//     try {
-//       await fsp.unlink(imagePath);
-//     } catch (deleteErr) {
-//       console.warn('⚠️ Failed to delete image:', deleteErr.message);
-//     }
-
-//     throw err;
-//   }
-// }
-
 async function replyWithImageAndText(tweetId, text, imagePath) {
   try {
     // Upload media to Twitter (v1 for media upload is correct)
@@ -423,18 +375,6 @@ async function replyWithText(tweetId, text) {
     throw err;
   }
 }
-
-
-// async function replyWithText(tweetId, text) {
-//   try {
-//     // Post reply with text only
-//     await twitterClient.v2.reply(text, tweetId);
-//   } catch (err) {
-//     console.error('❌ Error in replyWithText:', err.message);
-    
-//     throw err;
-//   }
-// }
 
 // Collection and document to store lastMentionId
 const LAST_MENTION_DOC = db.doc('bot_state/lastMention');
@@ -507,7 +447,7 @@ async function startBot() {
     await new Promise(res => setTimeout(res, waitTime));
     }
     else {
-        // For other errors, just throw or handle accordingly
+       
         throw err;
       }
     
@@ -566,20 +506,12 @@ console.log('🔄 Loaded lastMentionId from Firebase:', lastMentionId);
             const tweetText = effectiveTweet.text;
 
             // // 4. Generate meme text and meme image URL
-            // const memeText = await generateMemeText(tweetText);
-            // const imageUrl = await generateMemeImage(memeText);
-
-            // // 5. Download image locally before reply
-            // const imagePath = await downloadImage(imageUrl);
-
-            // // 6. Reply to the mention with meme text and image
-            // await replyWithImageAndText(tweet.id, memeText, imagePath);
-            // 4. Generate meme text
+            
             const memeText = await generateMemeText(tweetText);
 
             let imagePath = null;
             try {
-            // Try to generate meme image and download it
+            // 5. Try to generate meme image and download it
             const imageUrl = await generateMemeImage(memeText);
             imagePath = await downloadImage(imageUrl);
             } catch (err) {
@@ -648,7 +580,7 @@ console.log('🔄 Loaded lastMentionId from Firebase:', lastMentionId);
         // await new Promise(res => setTimeout(res, retryDelay));
         await new Promise(res => setTimeout(res, 3600 * 1000));
       }
-      // Optional: don't throw to keep polling alive, or uncomment below to stop on fatal error
+      // Optional: don't throw to keep polling alive, or uncomment to stop on fatal error
       // throw err;
     }
     //wait 1 hour before next poll
@@ -661,7 +593,7 @@ console.log('🔄 Loaded lastMentionId from Firebase:', lastMentionId);
 
 
 
-// --- Graceful shutdown ---
+// --- shutdown ---
 let shuttingDown = false;
 process.on('SIGINT', () => {
   console.log('Graceful shutdown requested');
@@ -707,7 +639,7 @@ runBotWithRetry();
 
 
 
-
+//Initial bot code that used a stream rather than polling. was using up the free twitter api too quickly so had to pivot
 // --- Main bot function ---
 // async function startBot() {
 //   console.log("🔧 Starting bot...");
